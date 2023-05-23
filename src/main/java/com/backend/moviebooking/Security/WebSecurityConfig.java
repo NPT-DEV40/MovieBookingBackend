@@ -74,9 +74,8 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests
+                        authorizeRequests -> authorizeRequests.anyRequest().authenticated()
                         .requestMatchers("/api/auth/**", "/api/test/**").permitAll()
-                        .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
