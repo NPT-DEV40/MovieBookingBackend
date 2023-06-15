@@ -35,6 +35,20 @@ public class WebSecurityConfig {
 
     private final AuthEntryPointJwt authEntryPointJwt;
 
+    private static final String[] AUTH_WHITELIST = {
+
+            "/v2/api-docs",
+            "/swagger-ui.html",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/webjars/**",
+
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+    };
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
@@ -69,8 +83,8 @@ public class WebSecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 authorizeRequests -> authorizeRequests
-                    .requestMatchers("/swagger**",  "/webjars/**", "/swagger-resources/**", "/v2/api**").permitAll() // permit all swagger url
-                    .requestMatchers("/api/auth/**","/api/api-docs", "/api/swagger-ui.html").permitAll()
+                    .requestMatchers("/api/auth/**","/api/test/**", "/api/movie/**").permitAll()
+                    .requestMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated()
             )
             .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout")).clearAuthentication(true)

@@ -26,13 +26,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
-public class UserController {
+public class AuthController {
     final AuthenticationManager authenticationManager;
 
     final UserRepository userRepository;
@@ -107,5 +106,11 @@ public class UserController {
         user.setRoles(roles);
         userRepository.save(user);
         return ResponseEntity.ok().body("User registered successfully!");
+    }
+
+    @GetMapping("/logout/success")
+    public ResponseEntity<?> logout() {
+        ResponseCookie jwtCookie = jwtUtils.deleteJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body("Logout successfully!");
     }
 }

@@ -84,4 +84,11 @@ public class JwtUtils {
                 .compact();
     }
 
+    public ResponseCookie deleteJwtCookie() {
+        return ResponseCookie.from(cookieName, null)
+                .httpOnly(true)
+                .maxAge(0)
+                .path("/api")
+                .build();
+    }
 }
