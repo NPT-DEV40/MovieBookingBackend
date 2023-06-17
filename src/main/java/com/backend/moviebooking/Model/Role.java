@@ -1,22 +1,23 @@
 package com.backend.moviebooking.Model;
 
 import jakarta.annotation.Nonnull;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Entity
-@Table(name = "roles")
+@Document(collection = "roles")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Long id;
+    private String id;
 
-    @Enumerated(EnumType.STRING)
     private ERole name;
+
+    public Role(@Nonnull ERole name) {
+        this.name = name;
+    }
 }
