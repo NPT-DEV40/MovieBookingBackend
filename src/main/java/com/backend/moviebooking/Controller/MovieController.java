@@ -33,7 +33,7 @@ public class MovieController {
 
     @PutMapping("/update-movie/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public ResponseEntity<?> updateMovie(@PathVariable Long id, @RequestBody MovieDto movieDto) {
+    public ResponseEntity<?> updateMovie(@PathVariable String id, @RequestBody MovieDto movieDto) {
         Movie movie = transfer(movieDto);
         movie.setId(id);
         movieService.save(movie);

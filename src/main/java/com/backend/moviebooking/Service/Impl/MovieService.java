@@ -37,11 +37,13 @@ public class MovieService implements IMovieService {
 
     @Override
     public List<Movie> findMovieByName(String name) {
-        return movieRepository.findMovieByName(name);
+//        return movieRepository.findMovieByName(name);
+        return null;
     }
 
     @Override
     public List<Movie> findAllMoviesShowing() {
-        return movieRepository.findAllByIsShowing();
+//        return movieRepository.findAllByIsShowing();
+        return null;
     }
 }
