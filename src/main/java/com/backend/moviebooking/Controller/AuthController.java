@@ -12,9 +12,13 @@ import com.backend.moviebooking.Security.jwt.JwtUtils;
 import com.backend.moviebooking.Service.Impl.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,6 +45,8 @@ public class AuthController {
     final PasswordEncoder passwordEncoder;
 
     final JwtUtils jwtUtils;
+
+    final MongoTemplate mongoTemplate;
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -79,7 +85,7 @@ public class AuthController {
 
         Set<Role> roles = new HashSet<>();
 
-        if(strRoles == null) {
+        if(strRoles.isEmpty()) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
@@ -112,5 +118,14 @@ public class AuthController {
     public ResponseEntity<?> logout() {
         ResponseCookie jwtCookie = jwtUtils.deleteJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body("Logout successfully!");
+    }
+
+    // Mod
+    @GetMapping("/users")
+    @PreAuthorize("hasRole('MODERATOR')")
+    public ResponseEntity<?> getAllUsers() {
+        Query query = new Query();
+        query.with(Sort.by(Sort.Direction.DESC, "roles"));
+        return ResponseEntity.ok().body(mongoTemplate.find(query, User.class));
     }
 }

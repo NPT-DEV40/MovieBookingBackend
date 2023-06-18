@@ -6,7 +6,7 @@ import com.backend.moviebooking.Model.Movie;
 import java.util.List;
 
 public interface IMovieService extends GenericService<Movie> {
-    List<Movie> findMovieByName(String name);
+    List<Movie> findByMovieNameIsLike(String name);
 
     List<Movie> findAllMoviesShowing();
 }

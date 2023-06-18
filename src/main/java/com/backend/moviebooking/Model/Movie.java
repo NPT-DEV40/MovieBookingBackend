@@ -1,5 +1,6 @@
 package com.backend.moviebooking.Model;
 
+import com.querydsl.core.annotations.QueryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
