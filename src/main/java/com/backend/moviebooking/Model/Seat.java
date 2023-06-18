@@ -1,24 +1,28 @@
 package com.backend.moviebooking.Model;
 
-import com.querydsl.core.annotations.QueryEntity;
-import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document(collection = "roles")
-@AllArgsConstructor
+@Document(collection = "seats")
 @NoArgsConstructor
-public class Role {
+@AllArgsConstructor
+public class Seat {
     @Id
     private String id;
 
-    private ERole name;
+    private String seatName;
 
-    public Role(@Nonnull ERole name) {
-        this.name = name;
-    }
+    private String seatType;
+
+    private Integer seatPrice;
+
+    private boolean isBooked = false;
+
+    @DBRef
+    private Room room;
 }

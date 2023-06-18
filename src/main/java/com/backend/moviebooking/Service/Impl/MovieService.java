@@ -25,25 +25,23 @@ public class MovieService implements IMovieService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         movieRepository.deleteById(id);
     }
 
     @Override
-    public Movie findById(Long id) {
+    public Movie findById(String id) {
         return movieRepository.findById(id).orElseThrow();
     }
 
 
     @Override
-    public List<Movie> findMovieByName(String name) {
-//        return movieRepository.findMovieByName(name);
-        return null;
+    public List<Movie> findByMovieNameIsLike(String name) {
+        return movieRepository.findByMovieNameIsLike(name);
     }
 
     @Override
     public List<Movie> findAllMoviesShowing() {
-//        return movieRepository.findAllByIsShowing();
-        return null;
+        return movieRepository.findAllByIsShowing();
     }
 }

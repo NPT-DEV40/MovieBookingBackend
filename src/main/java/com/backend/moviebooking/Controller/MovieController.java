@@ -42,7 +42,7 @@ public class MovieController {
 
     @PostMapping("/delete-movie/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
+    public ResponseEntity<?> deleteMovie(@PathVariable String id) {
         movieService.delete(id);
         return ResponseEntity.ok().body("Movie deleted");
     }
@@ -50,12 +50,12 @@ public class MovieController {
     @GetMapping("/search-movie")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<?> getMovieByName(@RequestParam String name) {
-        return ResponseEntity.ok().body(movieService.findMovieByName(name));
+        return ResponseEntity.ok().body(movieService.findByMovieNameIsLike(name));
     }
 
     @PostMapping("/show-movie/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
-    public ResponseEntity<?> showMovie(@PathVariable Long id) {
+    public ResponseEntity<?> showMovie(@PathVariable String id) {
         Movie movie = movieService.findById(id);
         movie.setShowing(true);
         movieService.save(movie);
@@ -65,7 +65,7 @@ public class MovieController {
     //User
 
     @GetMapping("/details/{id}")
-    public ResponseEntity<?> getMovieDetails(@PathVariable Long id) {
+    public ResponseEntity<?> getMovieDetails(@PathVariable String id) {
         return ResponseEntity.ok().body(movieService.findById(id));
     }
 
