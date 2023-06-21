@@ -16,9 +16,4 @@ public interface UserRepository extends MongoRepository<User, String> {
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
 
-
-    // Mod
-//    @Query(fields = "roles", sort = "{roles: 1}")
-    List<User> findAllDescByRoles();
-
 }
