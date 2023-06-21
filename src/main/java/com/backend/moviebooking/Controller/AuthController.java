@@ -10,6 +10,7 @@ import com.backend.moviebooking.Repository.RoleRepository;
 import com.backend.moviebooking.Repository.UserRepository;
 import com.backend.moviebooking.Security.jwt.JwtUtils;
 import com.backend.moviebooking.Service.Impl.UserDetailsImpl;
+import com.backend.moviebooking.Service.Impl.UserDetailsServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -39,6 +40,8 @@ public class AuthController {
     final AuthenticationManager authenticationManager;
 
     final UserRepository userRepository;
+
+    final UserDetailsServiceImpl userDetailsService;
 
     final RoleRepository roleRepository;
 
@@ -124,8 +127,9 @@ public class AuthController {
     @GetMapping("/users")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> getAllUsers() {
-        Query query = new Query();
-        query.with(Sort.by(Sort.Direction.DESC, "roles"));
-        return ResponseEntity.ok().body(mongoTemplate.find(query, User.class));
+//        Query query = new Query();
+//        query.with(Sort.by(Sort.Direction.DESC, "roles"));
+//        return ResponseEntity.ok().body(mongoTemplate.find(query, User.class));
+        return ResponseEntity.ok().body(userDetailsService.findAllDescByRoles());
     }
 }

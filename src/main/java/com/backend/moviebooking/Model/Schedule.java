@@ -4,23 +4,33 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
-@Document(collection = "rooms")
+@Document(collection = "schedule")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Room {
+public class Schedule {
     @Id
-    @Field("roomId")
+    @Field("scheduleId")
     private String id;
 
-    private String roomName;
+    private String startDate;
 
-    private Integer roomCapacity;
+    private String endDate;
 
-    private String roomType;
+    private String startTime;
 
-    private String roomImage;
+    private double price;
+
+    @DBRef
+    private Movie movie;
+
+    @DBRef
+    private Branch branch;
+
+    @DBRef
+    private Room room;
 }

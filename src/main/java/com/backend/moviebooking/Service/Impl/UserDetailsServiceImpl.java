@@ -1,8 +1,12 @@
 package com.backend.moviebooking.Service.Impl;
 
+import com.backend.moviebooking.Model.ERole;
 import com.backend.moviebooking.Model.User;
 import com.backend.moviebooking.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +19,7 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -23,7 +28,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return UserDetailsImpl.build(user);
     }
 
-    List<User> findAllDescByRoles() {
-        return userRepository.findAllDescByRoles();
+    public List<User> findAllDescByRoles() {
+        Query query = new Query();
+        query.with(Sort.sort(User.class).by(User::getRoles).descending());
+        return mongoTemplate.find(query, User.class);
     }
 }
