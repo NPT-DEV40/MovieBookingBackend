@@ -2,8 +2,10 @@ package com.backend.moviebooking.Controller;
 
 import com.backend.moviebooking.Dtos.MovieDto;
 import com.backend.moviebooking.Model.Movie;
+import com.backend.moviebooking.Service.IMovieService;
 import com.backend.moviebooking.Service.Impl.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MovieController {
 
-    private final MovieService movieService;
+    private final IMovieService movieService;
 
     //Administration
     @GetMapping("/all-movies")
@@ -67,6 +69,11 @@ public class MovieController {
     @GetMapping("/details/{id}")
     public ResponseEntity<?> getMovieDetails(@PathVariable String id) {
         return ResponseEntity.ok().body(movieService.findById(id));
+    }
+
+    @GetMapping("/movies-cinema")
+    public ResponseEntity<?> getAllMoviesByCinema(@RequestParam String cinemaId) {
+        return ResponseEntity.ok().body(movieService.findAllMoviesByCinema(cinemaId));
     }
 
     // Common

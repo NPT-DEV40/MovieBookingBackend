@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends MongoRepository<Ticket, String> {
     // User
-    List<Ticket> getTicketByUserId(String userId); // bill
+//    List<Ticket> getTicketByUserID(String userId); // bill
     // Admin
     @Query("{'ticket.schedule.id': ?0}")
     List<Ticket> findTicketByScheduleId(String scheduleId);
