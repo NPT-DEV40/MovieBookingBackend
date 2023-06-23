@@ -1,18 +1,18 @@
 package com.backend.moviebooking.Config;
 
-import com.fasterxml.jackson.databind.util.Converter;
+import com.backend.moviebooking.Model.Movie;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Configuration
 @EnableMongoRepositories(basePackages = "com.backend.moviebooking.Repository")
@@ -35,5 +35,10 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Override
     public Collection<String> getMappingBasePackages() {
         return Collections.singleton("com.backend.moviebooking.Model");
+    }
+
+    @Bean
+    public CustomIdGenerationEventListener customIdGenerationEventListener () {
+        return new CustomIdGenerationEventListener();
     }
 }

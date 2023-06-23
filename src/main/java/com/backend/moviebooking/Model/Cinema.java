@@ -8,29 +8,23 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
-@Document(collection = "schedule")
+@Document(collection = "cinemas")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Schedule {
+public class Cinema {
     @Id
-    @Field("scheduleId")
+    @Field("cinemaId")
     private String id;
-
-    private String startDate;
-
-    private String endDate;
-
-    private String startTime;
-
-    private double price;
+    private String cinemaImage;
+    private String cinemaName;
+    private String cinemaAddress;
+    private String cinemaPhone;
+    private String cinemaCity;
 
     @DBRef
-    private Movie movie;
-
-    @DBRef
-    private Cinema cinema;
-
-    @DBRef
-    private Room room;
+    private List<Movie> movies = new ArrayList<>();
 }
