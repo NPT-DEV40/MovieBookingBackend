@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface CinemaRepository extends MongoRepository<Cinema, String> {
     List<Cinema> findCinemaByCinemaName(String cinemaName);
-    @Query(value = "{ 'cinema.movie.id' : ?0 }")
+    @Query(value = "{ 'movies.id' : ?0 }")
     List<Cinema> getCinemaByMovieId(String MovieId);
 
 }
