@@ -1,23 +1,17 @@
 package com.backend.moviebooking.Model;
 
-import com.backend.moviebooking.Config.CustomIdGenerationEventListener;
-import com.backend.moviebooking.Config.ICustomId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
-import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
-
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "movies")
-public class Movie implements ICustomId {
+public class Movie {
     @Id
     @Field("movieId")
     private String id;
@@ -43,6 +37,5 @@ public class Movie implements ICustomId {
     private String movieDirector;
 
     private boolean isShowing = false;
-
 
 }

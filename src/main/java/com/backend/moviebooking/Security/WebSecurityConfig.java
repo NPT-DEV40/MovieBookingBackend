@@ -36,7 +36,6 @@ public class WebSecurityConfig {
     private final AuthEntryPointJwt authEntryPointJwt;
 
     private static final String[] AUTH_WHITELIST = {
-
             "/v2/api-docs",
             "/swagger-ui.html",
             "/swagger-resources",
@@ -44,7 +43,6 @@ public class WebSecurityConfig {
             "/configuration/ui",
             "/configuration/security",
             "/webjars/**",
-
             "/v3/api-docs/**",
             "/swagger-ui/**"
     };
@@ -83,6 +81,9 @@ public class WebSecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 authorizeRequests -> authorizeRequests
+                        .requestMatchers("/api/movie/all-movies", "/api/movie/add-movie", "api/movie/update-movie/{id}",
+                                "/api/movie/delete-movie/{id}", "/api/movie/search-movie", "/api/movie/show-movie/{id}",
+                                "").hasRole("ADMIN")
                     .requestMatchers("/api/auth/**","/api/test/**", "/api/movie/**").permitAll()
                     .requestMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated()

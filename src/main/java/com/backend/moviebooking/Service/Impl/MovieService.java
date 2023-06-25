@@ -1,13 +1,10 @@
 package com.backend.moviebooking.Service.Impl;
 
-import com.backend.moviebooking.Dtos.MovieDto;
-import com.backend.moviebooking.Model.Cinema;
 import com.backend.moviebooking.Model.Movie;
 import com.backend.moviebooking.Repository.CinemaRepository;
 import com.backend.moviebooking.Repository.MovieRepository;
 import com.backend.moviebooking.Service.IMovieService;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
