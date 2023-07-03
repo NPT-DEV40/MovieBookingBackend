@@ -1,6 +1,6 @@
 package com.backend.moviebooking.Controller;
 
-import com.backend.moviebooking.Model.ERole;
+import com.backend.moviebooking.Model.Enum.ERole;
 import com.backend.moviebooking.Model.Role;
 import com.backend.moviebooking.Model.User;
 import com.backend.moviebooking.Payload.Request.LoginRequest;
@@ -13,9 +13,7 @@ import com.backend.moviebooking.Service.Impl.UserDetailsImpl;
 import com.backend.moviebooking.Service.Impl.UserDetailsServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +32,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "http://localhost:4200/register", maxAge = 3600)
 @RequiredArgsConstructor
 public class AuthController {
     final AuthenticationManager authenticationManager;
@@ -52,6 +50,7 @@ public class AuthController {
     final MongoTemplate mongoTemplate;
 
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
+    @CrossOrigin(origins = "http://localhost:4200/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -67,20 +66,23 @@ public class AuthController {
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse(userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
+                jwtCookie.toString(),
                 roles);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(userDetailsResponse);
     }
 
     @PostMapping("/register")
+    @CrossOrigin(origins = "http://localhost:4200/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
-        if(userRepository.existsByUsername(registerRequest.getUsername())) {
+        if(userRepository.existsByUsername(registerRequest.getUserName())) {
+            System.out.println(registerRequest.getUserName());
             return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }
         if(userRepository.existsByEmail(registerRequest.getEmail())) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
 
-        User user = new User(registerRequest.getUsername(),
+        User user = new User(registerRequest.getUserName(),
                 registerRequest.getEmail(),
                 passwordEncoder.encode(registerRequest.getPassword()));
 
@@ -88,11 +90,7 @@ public class AuthController {
 
         Set<Role> roles = new HashSet<>();
 
-        if(strRoles.isEmpty()) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
+        if(strRoles != null && !strRoles.isEmpty()) {
             strRoles.forEach(role -> {
                 switch(role) {
                     case "admin":
@@ -111,10 +109,14 @@ public class AuthController {
                         roles.add(userRole);
                 }
             });
+        } else {
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
         }
         user.setRoles(roles);
         userRepository.save(user);
-        return ResponseEntity.ok().body("User registered successfully!");
+        return ResponseEntity.ok().body(registerRequest);
     }
 
     @GetMapping("/logout/success")

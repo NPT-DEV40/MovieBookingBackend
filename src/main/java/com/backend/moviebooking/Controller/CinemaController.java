@@ -49,6 +49,12 @@ public class CinemaController {
         return ResponseEntity.ok().body(cinemaService.getCinemasThatHasMovie(id));
     }
 
+//    @GetMapping ("/cinemas-by-city-has-movie/{id}")
+//    public ResponseEntity<?> getAllCinemasByCityHasMovie(@PathVariable("id") String id, @RequestParam("city") String city) {
+////        return ResponseEntity.ok().body(cinemaService.getCinemaByCityThatHasMovie(city, id));
+//        retutn null
+//    }
+
     // Common
     private Cinema transfer(CinemaDto cinemaDto) {
         Cinema cinema = new Cinema();

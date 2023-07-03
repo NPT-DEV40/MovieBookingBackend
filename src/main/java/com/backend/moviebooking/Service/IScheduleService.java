@@ -1,4 +1,6 @@
 package com.backend.moviebooking.Service;
 
-public interface IScheduleService {
+import com.backend.moviebooking.Model.Schedule;
+
+public interface IScheduleService extends GenericService<Schedule> {
 }

@@ -12,5 +12,6 @@ public interface CinemaRepository extends MongoRepository<Cinema, String> {
     List<Cinema> findCinemaByCinemaName(String cinemaName);
     @Query(value = "{ 'movies.id' : ?0 }")
     List<Cinema> getCinemaByMovieId(String MovieId);
-
+    @Query(value = "{ 'cinemaCity' : ?0 }")
+    List<Cinema> getCinemaByCinemaCity(String cinemaCity);
 }

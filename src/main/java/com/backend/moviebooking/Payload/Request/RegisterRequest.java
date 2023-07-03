@@ -15,18 +15,23 @@ import java.util.Set;
 @Getter
 @Setter
 public class RegisterRequest {
-    @NotBlank
-    @Size(min = 3, max = 20)
-    private String username;
+//    @NotBlank
+    private String firstName;
 
-    @NotBlank
-    @Email
-    @Size(min = 6, max = 50)
+//    @NotBlank
+    private String lastName;
+
     private String email;
 
-    private Set<String> roles;
+//    @NotBlank
+//    @Size(min = 3, max = 20)
+    private String userName;
 
-    @NotBlank
-    @Size(min = 6, max = 20)
+//    @NotBlank
+//    @Size(min = 6, max = 20)
     private String password;
+
+    private String confirmPassword;
+
+    private Set<String> roles;
 }

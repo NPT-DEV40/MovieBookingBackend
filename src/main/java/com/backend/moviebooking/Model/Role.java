@@ -1,5 +1,6 @@
 package com.backend.moviebooking.Model;
 
+import com.backend.moviebooking.Model.Enum.ERole;
 import jakarta.annotation.Nonnull;
 import lombok.AllArgsConstructor;
 import lombok.Data;

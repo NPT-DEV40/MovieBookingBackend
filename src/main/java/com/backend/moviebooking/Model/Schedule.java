@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Document(collection = "schedule")
 @NoArgsConstructor
@@ -19,18 +22,13 @@ public class Schedule {
 
     private String startDate;
 
-    private String endDate;
-
     private String startTime;
 
-    private double price;
+    private Boolean isEndShowing;
 
     @DBRef
     private Movie movie;
 
     @DBRef
     private Cinema cinema;
-
-    @DBRef
-    private Room room;
 }

@@ -19,6 +19,7 @@ public class Cinema {
     @Id
     @Field("cinemaId")
     private String id;
+
     private String cinemaImage;
     private String cinemaName;
     private String cinemaAddress;
