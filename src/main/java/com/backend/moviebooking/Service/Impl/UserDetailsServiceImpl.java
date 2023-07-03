@@ -1,6 +1,6 @@
 package com.backend.moviebooking.Service.Impl;
 
-import com.backend.moviebooking.Model.ERole;
+import com.backend.moviebooking.Model.Enum.Provider;
 import com.backend.moviebooking.Model.User;
 import com.backend.moviebooking.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +32,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Query query = new Query();
         query.with(Sort.sort(User.class).by(User::getRoles).descending());
         return mongoTemplate.find(query, User.class);
+    }
+
+    public void processOAuthPostLogin(String username) {
+        User user = userRepository.getUserByUsername(username);
+        if(user == null) {
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setProvider(Provider.GOOGLE);
+            userRepository.save(newUser);
+        }
     }
 }

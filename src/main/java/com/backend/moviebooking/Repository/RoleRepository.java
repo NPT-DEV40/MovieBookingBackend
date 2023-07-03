@@ -1,6 +1,6 @@
 package com.backend.moviebooking.Repository;
 
-import com.backend.moviebooking.Model.ERole;
+import com.backend.moviebooking.Model.Enum.ERole;
 import com.backend.moviebooking.Model.Role;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

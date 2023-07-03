@@ -1,18 +1,14 @@
 package com.backend.moviebooking;
 
-import com.backend.moviebooking.Model.ERole;
-import com.backend.moviebooking.Model.Role;
-import com.backend.moviebooking.Repository.RoleRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
 @EnableMongoAuditing
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 public class MovieBookingApplication {
 
     public static void main(String[] args) {

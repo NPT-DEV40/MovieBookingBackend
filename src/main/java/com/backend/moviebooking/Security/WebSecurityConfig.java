@@ -2,7 +2,12 @@ package com.backend.moviebooking.Security;
 
 import com.backend.moviebooking.Security.jwt.AuthEntryPointJwt;
 import com.backend.moviebooking.Security.jwt.AuthTokenFilter;
+import com.backend.moviebooking.Service.Impl.OAuth2UserImpl;
+import com.backend.moviebooking.Service.Impl.OAuth2UserService;
 import com.backend.moviebooking.Service.Impl.UserDetailsServiceImpl;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,12 +23,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -35,6 +50,8 @@ public class WebSecurityConfig {
 
     private final AuthEntryPointJwt authEntryPointJwt;
 
+    private final OAuth2UserService oAuth2UserService;
+
     private static final String[] AUTH_WHITELIST = {
             "/v2/api-docs",
             "/swagger-ui.html",
@@ -44,7 +61,8 @@ public class WebSecurityConfig {
             "/configuration/security",
             "/webjars/**",
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            "/oauth/**",
     };
 
     @Bean
@@ -71,11 +89,37 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cors = new CorsConfiguration();
+        cors.setAllowedOrigins(java.util.List.of("http://localhost:4200"));
+        cors.setAllowedMethods(java.util.List.of("GET","POST", "PUT", "DELETE", "OPTIONS"));
+        cors.setAllowedHeaders(java.util.List.of("*"));
+        cors.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cors);
+        return source;
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(List.of("http://localhost:4200"));
+        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        corsConfig.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+        corsConfig.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+
+        return new CorsFilter(source);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            .cors(cors -> cors.disable())
+            .cors(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
             .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(authEntryPointJwt))
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -88,6 +132,23 @@ public class WebSecurityConfig {
                     .requestMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated()
             )
+                .oauth2Login(
+                        oauth2Login -> oauth2Login
+                                .loginPage("/api/auth/login")
+                                .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
+                                .successHandler(new AuthenticationSuccessHandler() {
+                                                    @Override
+                                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                                        OAuth2UserImpl oAuth2User = (OAuth2UserImpl) authentication.getPrincipal();
+                                                        response.sendRedirect("http://localhost:4200/home");
+                                                    }
+                                                }
+
+                                )
+                                .defaultSuccessUrl("/api/auth/login/success", true)
+                                .failureUrl("/api/auth/login/failure")
+                                .permitAll()
+                )
             .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout")).clearAuthentication(true)
                     .deleteCookies("nptCookie").logoutSuccessUrl("/api/auth/logout/success"))
             .authenticationProvider(authenticationProvider())

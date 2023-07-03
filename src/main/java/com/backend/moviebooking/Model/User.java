@@ -1,5 +1,6 @@
 package com.backend.moviebooking.Model;
 
+import com.backend.moviebooking.Model.Enum.Provider;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -41,6 +42,8 @@ public class User {
 
     @DBRef
     private Set<Role> roles = new HashSet<>();
+
+    private Provider provider;
 
     public User(String username, String email, String encode) {
         this.username = username;

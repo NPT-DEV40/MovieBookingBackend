@@ -10,6 +10,7 @@ import com.backend.moviebooking.Service.ISeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,15 +45,12 @@ public class SeatService implements ISeatService {
 
     @Override
     public List<Seat> getSeatsByScheduleId(String scheduleId) {
-        Room room = scheduleRepository.findById(scheduleId).orElseThrow().getRoom();
-        List<Seat> seats = seatRepository.findSeatByRoomId(room.getId());
 
         // Ticket Repository
         List<Seat> seatIsOccupied = ticketRepository.findTicketByScheduleId(scheduleId)
                 .stream().map(Ticket::getSeat).toList();
+        List<Seat> seats = new ArrayList<>();
 
-        seats.stream().filter(seatIsOccupied::contains).forEach(seat -> seat.setBooked(true));
-
-        return seats;
+        return  seats;
     }
 }

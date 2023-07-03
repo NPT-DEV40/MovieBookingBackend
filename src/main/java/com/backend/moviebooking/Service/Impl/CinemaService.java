@@ -44,19 +44,25 @@ public class CinemaService implements ICinemaService {
         return cinemaRepository.findCinemaByCinemaName(cinemaName);
     }
 
-    @Override
-    public List<Cinema> getCinemaByCityThatHasMovie(String city, String movieId) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("cinema.id").in(
-                Query.query(Criteria.where("schedule.movie.id").is(movieId)
-                        .and("schedule.branch.city").is(city))
-                        .fields().include("schedule.cinema.id")));
-        return mongoTemplate.find(query, Cinema.class);
-    }
+//    @Override
+//    public List<Cinema> getCinemaByCityThatHasMovie(String city, String movieId) {
+//        // Query in SQL: select * from cinema c where c.id in (select s.cinema.id from schedule s where s.cinema.city = ?1 and s.movie.id = ?2)
+//        Query query = new Query();
+//        query.addCriteria(Criteria.where("cinema.id")
+//                .in(Query.query(Criteria.where("schedule.movie.id").is(movieId)
+//                        .and("schedule.cinema.city").is(city))
+//                        .fields().include("cinema.id")));
+//        return mongoTemplate.find(query, Cinema.class);
+//    }
 
     @Override
     public List<Cinema> getCinemasThatHasMovie(String movieId) {
         return cinemaRepository.getCinemaByMovieId(movieId);
+    }
+
+    @Override
+    public List<Cinema> getCinemasByCity(String city) {
+        return cinemaRepository.getCinemaByCinemaCity(city);
     }
 
     @Override
