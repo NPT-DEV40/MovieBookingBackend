@@ -1,5 +1,6 @@
 package com.backend.moviebooking.Controller;
 
+import com.backend.moviebooking.Dtos.TokenDto;
 import com.backend.moviebooking.Model.Enum.ERole;
 import com.backend.moviebooking.Model.Role;
 import com.backend.moviebooking.Model.User;
@@ -58,7 +59,7 @@ public class AuthController {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        String jwt = jwtUtils.generateToken(authentication);
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -66,9 +67,15 @@ public class AuthController {
         UserDetailsResponse userDetailsResponse = new UserDetailsResponse(userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                jwtCookie.toString(),
+                jwt,
                 roles);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(userDetailsResponse);
+        return ResponseEntity.ok().body(userDetailsResponse);
+    }
+
+    @PostMapping(value = "/login/google")
+    public ResponseEntity<?> loginGoogle(@RequestBody String tokenDto) {
+
+        return null;
     }
 
     @PostMapping("/register")
@@ -121,8 +128,7 @@ public class AuthController {
 
     @GetMapping("/logout/success")
     public ResponseEntity<?> logout() {
-        ResponseCookie jwtCookie = jwtUtils.deleteJwtCookie();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body("Logout successfully!");
+        return ResponseEntity.ok().body("Logout successfully!");
     }
 
     // Mod
