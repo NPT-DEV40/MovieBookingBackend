@@ -34,11 +34,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return mongoTemplate.find(query, User.class);
     }
 
-    public void processOAuthPostLogin(String username) {
-        User user = userRepository.getUserByUsername(username);
+    public void processOAuthPostLogin(String email) {
+        User user = userRepository.getUserByEmail(email);
         if(user == null) {
             User newUser = new User();
-            newUser.setUsername(username);
+            newUser.setUsername(email);
             newUser.setProvider(Provider.GOOGLE);
             userRepository.save(newUser);
         }

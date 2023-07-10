@@ -52,6 +52,7 @@ public class WebSecurityConfig {
 
     private final OAuth2UserService oAuth2UserService;
 
+
     private static final String[] AUTH_WHITELIST = {
             "/v2/api-docs",
             "/swagger-ui.html",
@@ -62,7 +63,8 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/oauth/**",
+            "/api/auth/login/oauth2/**",
+            "/api/auth/login/oauth2/code/google"
     };
 
     @Bean
@@ -134,19 +136,20 @@ public class WebSecurityConfig {
             )
                 .oauth2Login(
                         oauth2Login -> oauth2Login
-                                .loginPage("/api/auth/login")
+                                .loginPage("http://localhost:4200/login")
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
                                 .successHandler(new AuthenticationSuccessHandler() {
                                                     @Override
                                                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
                                                         OAuth2UserImpl oAuth2User = (OAuth2UserImpl) authentication.getPrincipal();
+                                                        userDetailsService.processOAuthPostLogin(oAuth2User.getEmail());
                                                         response.sendRedirect("http://localhost:4200/home");
                                                     }
                                                 }
 
                                 )
-                                .defaultSuccessUrl("/api/auth/login/success", true)
-                                .failureUrl("/api/auth/login/failure")
+//                                .defaultSuccessUrl("/api/auth/login/success", true)
+//                                .failureUrl("/api/auth/login/failure")
                                 .permitAll()
                 )
             .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout")).clearAuthentication(true)
