@@ -1,6 +1,6 @@
 package com.backend.moviebooking.Security.jwt;
 
-import com.backend.moviebooking.Service.Impl.UserDetailsImpl;
+import com.backend.moviebooking.Security.Services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class JwtUtils {
         return false;
     }
 
-    private String generateTokenFromUser(String username) {
+    public String generateTokenFromUser(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())

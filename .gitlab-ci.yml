@@ -27,7 +27,7 @@ maven-test: # run unit test của project
     paths:
       - target/*.jar
 
-docker-build: # bước này sẽ build iamge từ Dockerfile và push lên docker hub
+docker-build: # bước này sẽ build image từ Dockerfile và push lên docker hub
   stage: docker
   script:
     - docker login -u $USERNAME_DOCKER -p $PASSWORD_DOCKER # nhập tên username và password docker hub của các bạn ở đây để có quyền push
