@@ -25,7 +25,9 @@ import com.google.api.client.json.gson.GsonFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -205,9 +207,8 @@ public class AuthController {
     @GetMapping("/users")
     @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> getAllUsers() {
-//        Query query = new Query();
-//        query.with(Sort.by(Sort.Direction.DESC, "roles"));
-//        return ResponseEntity.ok().body(mongoTemplate.find(query, User.class));
-        return ResponseEntity.ok().body(userDetailsService.findAllDescByRoles());
+        Query query = new Query();
+        query.with(Sort.by(Sort.Direction.DESC, "roles"));
+        return ResponseEntity.ok().body(mongoTemplate.find(query, User.class));
     }
 }
