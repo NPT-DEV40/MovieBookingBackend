@@ -1,4 +1,4 @@
-package com.backend.moviebooking.Service.Impl;
+package com.backend.moviebooking.Security.Services;
 
 import com.backend.moviebooking.Model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
