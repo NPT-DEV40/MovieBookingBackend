@@ -10,9 +10,9 @@ name: MovieBooking
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 jobs:
   build:
@@ -26,6 +26,8 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: 17
+        distribution: 'temurin'
+        cache: maven
     - name: Package Jar
       id: packaging-jar
       shell: bash
