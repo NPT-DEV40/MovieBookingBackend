@@ -4,7 +4,7 @@ import com.backend.moviebooking.Security.jwt.AuthEntryPointJwt;
 import com.backend.moviebooking.Security.jwt.AuthTokenFilter;
 import com.backend.moviebooking.Service.Impl.OAuth2UserImpl;
 import com.backend.moviebooking.Service.Impl.OAuth2UserService;
-import com.backend.moviebooking.Service.Impl.UserDetailsServiceImpl;
+import com.backend.moviebooking.Security.Services.UserDetailsServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,12 +13,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,7 +26,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -52,6 +47,7 @@ public class WebSecurityConfig {
 
     private final OAuth2UserService oAuth2UserService;
 
+
     private static final String[] AUTH_WHITELIST = {
             "/v2/api-docs",
             "/swagger-ui.html",
@@ -62,7 +58,8 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/oauth/**",
+            "/api/auth/login/oauth2/**",
+            "/api/auth/login/oauth2/code/google"
     };
 
     @Bean
@@ -134,19 +131,20 @@ public class WebSecurityConfig {
             )
                 .oauth2Login(
                         oauth2Login -> oauth2Login
-                                .loginPage("/api/auth/login")
+                                .loginPage("http://localhost:4200/login")
                                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
                                 .successHandler(new AuthenticationSuccessHandler() {
                                                     @Override
                                                     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
                                                         OAuth2UserImpl oAuth2User = (OAuth2UserImpl) authentication.getPrincipal();
+                                                        userDetailsService.processOAuthPostLogin(oAuth2User.getEmail());
                                                         response.sendRedirect("http://localhost:4200/home");
                                                     }
                                                 }
 
                                 )
-                                .defaultSuccessUrl("/api/auth/login/success", true)
-                                .failureUrl("/api/auth/login/failure")
+//                                .defaultSuccessUrl("/api/auth/login/success", true)
+//                                .failureUrl("/api/auth/login/failure")
                                 .permitAll()
                 )
             .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout")).clearAuthentication(true)

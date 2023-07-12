@@ -1,4 +1,4 @@
-package com.backend.moviebooking.Service.Impl;
+package com.backend.moviebooking.Security.Services;
 
 import com.backend.moviebooking.Model.Enum.Provider;
 import com.backend.moviebooking.Model.User;
@@ -34,11 +34,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return mongoTemplate.find(query, User.class);
     }
 
-    public void processOAuthPostLogin(String username) {
-        User user = userRepository.getUserByUsername(username);
+    public User getUserByEmail(String email) {
+        return userRepository.getUserByEmail(email);
+    }
+
+    public void processOAuthPostLogin(String email) {
+        User user = userRepository.getUserByEmail(email);
         if(user == null) {
             User newUser = new User();
-            newUser.setUsername(username);
+            newUser.setUsername(email);
             newUser.setProvider(Provider.GOOGLE);
             userRepository.save(newUser);
         }
