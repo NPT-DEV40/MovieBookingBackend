@@ -45,9 +45,6 @@ public class WebSecurityConfig {
 
     private final AuthEntryPointJwt authEntryPointJwt;
 
-    private final OAuth2UserService oAuth2UserService;
-
-
     private static final String[] AUTH_WHITELIST = {
             "/v2/api-docs",
             "/swagger-ui.html",
@@ -66,7 +63,6 @@ public class WebSecurityConfig {
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
-
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -100,20 +96,6 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of("http://localhost:4200"));
-        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        corsConfig.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
-        corsConfig.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
-
-        return new CorsFilter(source);
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .cors(AbstractHttpConfigurer::disable)
@@ -122,31 +104,10 @@ public class WebSecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/movie/all-movies", "/api/movie/add-movie", "api/movie/update-movie/{id}",
-                                "/api/movie/delete-movie/{id}", "/api/movie/search-movie", "/api/movie/show-movie/{id}",
-                                "").hasRole("ADMIN")
                     .requestMatchers("/api/auth/**","/api/test/**", "/api/movie/**").permitAll()
                     .requestMatchers(AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated()
             )
-                .oauth2Login(
-                        oauth2Login -> oauth2Login
-                                .loginPage("http://localhost:4200/login")
-                                .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
-                                .successHandler(new AuthenticationSuccessHandler() {
-                                                    @Override
-                                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                                                        OAuth2UserImpl oAuth2User = (OAuth2UserImpl) authentication.getPrincipal();
-                                                        userDetailsService.processOAuthPostLogin(oAuth2User.getEmail());
-                                                        response.sendRedirect("http://localhost:4200/home");
-                                                    }
-                                                }
-
-                                )
-//                                .defaultSuccessUrl("/api/auth/login/success", true)
-//                                .failureUrl("/api/auth/login/failure")
-                                .permitAll()
-                )
             .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout")).clearAuthentication(true)
                     .deleteCookies("nptCookie").logoutSuccessUrl("/api/auth/logout/success"))
             .authenticationProvider(authenticationProvider())
