@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -94,33 +96,40 @@ public class AuthController {
     @PostMapping(value = "/login/google")
     @CrossOrigin(origins = "http://localhost:4200/login")
     public ResponseEntity<?> loginGoogle(@RequestBody String token) throws IOException {
-        NetHttpTransport transport = new NetHttpTransport();
-        JsonFactory factory = GsonFactory.getDefaultInstance();
-        GoogleIdTokenVerifier.Builder verifier = new GoogleIdTokenVerifier.Builder(transport, factory)
-                .setAudience(Collections.singleton(idClient));
-        GoogleIdToken googleIdToken = GoogleIdToken.parse(verifier.getJsonFactory(), token);
-        GoogleIdToken.Payload payload = googleIdToken.getPayload();
-        String email = payload.getEmail();
-        String userName = payload.get("name").toString();
-        User user = new User();
-        if(userRepository.existsByEmail(email)) {
-            user = userDetailsService.getUserByEmail(email);
-        }
-        else {
-            user = createUser(email, userName);
-        }
-        List<String> roles = new ArrayList<String>(){{
-            add("ROLE_USER");
-        }};
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            NetHttpTransport transport = new NetHttpTransport();
+            JsonFactory factory = GsonFactory.getDefaultInstance();
+            GoogleIdTokenVerifier.Builder verifier = new GoogleIdTokenVerifier.Builder(transport, factory)
+                    .setAudience(Collections.singleton(idClient));
+            GoogleIdToken googleIdToken = GoogleIdToken.parse(verifier.getJsonFactory(), token);
+            GoogleIdToken.Payload payload = googleIdToken.getPayload();
+            String email = payload.getEmail();
+            String userName = payload.get("name").toString();
+            User user = new User();
+            if (userRepository.existsByEmail(email)) {
+                user = userDetailsService.getUserByEmail(email);
+            } else {
+                user = createUser(email, userName);
+            }
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        RefreshToken refreshToken = refreshTokenService.CreateRefreshToken(user.getId());
-        JwtResponse jwtResponse = new JwtResponse(jwtUtils.generateToken(authentication), refreshToken,
-                user.getId(), user.getUsername(),
-                user.getEmail(), roles);
-        return ResponseEntity.ok().body(jwtResponse);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
+
+            RefreshToken refreshToken = refreshTokenService.CreateRefreshToken(user.getId());
+            JwtResponse jwtResponse = new JwtResponse(jwtUtils.generateToken(authentication), refreshToken,
+                    user.getId(), user.getUsername(),
+                    user.getEmail(), roles);
+            return ResponseEntity.ok().body(jwtResponse);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred during Google authentication.");
+        }
     }
 
     @PostMapping("/refreshToken")
@@ -210,5 +219,10 @@ public class AuthController {
         Query query = new Query();
         query.with(Sort.by(Sort.Direction.DESC, "roles"));
         return ResponseEntity.ok().body(mongoTemplate.find(query, User.class));
+    }
+
+    @GetMapping("/emails")
+    public ResponseEntity<?> getAllEmails() {
+        return ResponseEntity.ok().body(userDetailsService.getUserByEmail("admin@gmail.com"));
     }
 }

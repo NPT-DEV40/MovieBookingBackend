@@ -20,7 +20,7 @@ public class MovieController {
 
     //Administration
     @GetMapping("/all-movies")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @CrossOrigin(origins = "http://localhost:4200/home")
     public ResponseEntity<?> getAllMovies() {
         return ResponseEntity.ok().body(movieService.findAll());
     }

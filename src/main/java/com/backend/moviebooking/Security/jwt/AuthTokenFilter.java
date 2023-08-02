@@ -34,14 +34,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        userDetails, null, userDetails.getAuthorities()); // represent for the user's authentication and contains user information and their permissions
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // add authentication details to 'authenticationToken', including request information(IP address, user-agent,..)
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken); // Token has been set on
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
         }
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response); // Move to other filter if available
     }
 
     private String parseJwt(HttpServletRequest request) {
