@@ -28,7 +28,7 @@ jobs:
         mkdir -p deploy
         cp target/*.jar deploy/application.jar
         cd deploy
-        zip -r deploy.zip .
+        zip -r ../deploy.zip .
     - name: Display Working Directory
       run: |
         pwd
