@@ -28,8 +28,11 @@ jobs:
         mkdir -p deploy
         cp target/*.jar deploy/application.jar
         cd deploy
-        zip -r ../deploy.zip .
-        cd ..
+        zip -r deploy.zip .
+    - name: Display Working Directory
+      run: |
+        pwd
+        ls -la
     - name: Build & push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
