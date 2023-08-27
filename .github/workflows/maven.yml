@@ -57,4 +57,4 @@ jobs:
         region: ap-southeast-1
         deployment_package: deploy.zip
     - name: Deploy success
-      run: echo "Deployed!"
+      run: echo "Deployed OK!"
