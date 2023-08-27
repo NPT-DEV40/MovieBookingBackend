@@ -10,7 +10,6 @@ import com.backend.moviebooking.Payload.Request.RegisterRequest;
 import com.backend.moviebooking.Payload.Request.TokenRefreshRequest;
 import com.backend.moviebooking.Payload.Response.JwtResponse;
 import com.backend.moviebooking.Payload.Response.TokenRefreshResponse;
-import com.backend.moviebooking.Payload.Response.UserDetailsResponse;
 import com.backend.moviebooking.Repository.RoleRepository;
 import com.backend.moviebooking.Repository.UserRepository;
 import com.backend.moviebooking.Security.Services.RefreshTokenService;
@@ -35,6 +34,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -109,15 +109,15 @@ public class AuthController {
             if (userRepository.existsByEmail(email)) {
                 user = userDetailsService.getUserByEmail(email);
             } else {
-                user = createUser(email, userName);
+                user = createUser(email, email);
             }
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+            user.setPassword(passWord);
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             List<String> roles = userDetails.getAuthorities().stream()
-                    .map(item -> item.getAuthority())
+                    .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
             RefreshToken refreshToken = refreshTokenService.CreateRefreshToken(user.getId());
@@ -126,7 +126,6 @@ public class AuthController {
                     user.getEmail(), roles);
             return ResponseEntity.ok().body(jwtResponse);
         } catch (IOException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred during Google authentication.");
         }
@@ -180,21 +179,22 @@ public class AuthController {
 
         if(strRoles != null && !strRoles.isEmpty()) {
             strRoles.forEach(role -> {
-                switch(role) {
-                    case "admin":
+                switch (role) {
+                    case "admin" -> {
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
-                        break;
-                    case "mod":
+                    }
+                    case "mod" -> {
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(modRole);
-                        break;
-                    default:
+                    }
+                    default -> {
                         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(userRole);
+                    }
                 }
             });
         } else {

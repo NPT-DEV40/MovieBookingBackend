@@ -37,5 +37,4 @@ public class Movie {
     private String movieDirector;
 
     private boolean isShowing = false;
-
 }

@@ -56,8 +56,7 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/api/auth/login/oauth2/**",
-            "/api/auth/login/oauth2/code/google"
+            "/**"
     };
 
     @Bean

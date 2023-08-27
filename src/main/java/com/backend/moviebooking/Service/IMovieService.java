@@ -11,4 +11,5 @@ public interface IMovieService extends GenericService<Movie> {
     List<Movie> findAllMoviesShowing();
 
     List<Movie> findAllMoviesByCinema(String cinemaId);
+
 }
