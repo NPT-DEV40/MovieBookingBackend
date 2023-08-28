@@ -33,6 +33,9 @@ jobs:
       run: |
         pwd
         ls -la
+    - name: Current timeStamp
+      id: timestamp
+      run: echo "::set-output name=date::$(date +'%Y-%m-%dT%H-%M-%S-%3NZ')"
     - name: Build & push Docker image
       uses: mr-smithers-excellent/docker-build-push@v6
       with:
@@ -56,7 +59,7 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: WebMovieBooking
         environment_name: movie-booking-env
-        version_label: v1.0.0
+        version_label: ${{steps.timestamp.outputs.date}}
         region: ap-southeast-1
         deployment_package: deploy.zip
     - name: Deploy success
