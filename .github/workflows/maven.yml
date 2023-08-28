@@ -27,8 +27,6 @@ jobs:
       run: |
         mkdir -p deploy
         cp target/*.jar deploy/application.jar
-        cp -r .ebextensions deploy/.ebextensions
-        cp -r .platform deploy/.platform
         cd deploy && zip -r deploy.zip .
     - name: Current timeStamp
       id: timestamp
