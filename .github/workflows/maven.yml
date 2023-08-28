@@ -26,13 +26,11 @@ jobs:
     - name: Generate deployment package
       run: |
         mkdir -p deploy
-        cp target/*.jar deploy/application.jar
-        cd deploy
-        zip -r ../deploy.zip .
-    - name: Display Working Directory
-      run: |
-        pwd
-        ls -la
+        cp build/libs/*.jar deploy/application.jar
+        cp Procfile deploy/Procfile
+        cp -r .ebextensions deploy/.ebextensions
+        cp -r .platform deploy/.platform
+        cd deploy && zip -r deploy.zip .
     - name: Current timeStamp
       id: timestamp
       run: echo "date = $(date +'%Y-%m-%d %H:%M:%S')"
@@ -61,6 +59,6 @@ jobs:
         environment_name: movie-booking-env
         version_label: deploy-${{ github.sha }}
         region: ap-southeast-1
-        deployment_package: deploy.zip
+        deployment_package: deploy/deploy.zip
     - name: Deploy success
       run: echo "Deployed OK!"
