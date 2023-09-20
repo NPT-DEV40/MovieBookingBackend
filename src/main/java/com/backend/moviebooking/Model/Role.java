@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 public class Role {
     @Id
-    @Field("roleId")
     private String id;
 
     private ERole name;

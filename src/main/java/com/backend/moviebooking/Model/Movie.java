@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "movies")
 public class Movie {
     @Id
-    @Field("movieId")
     private String id;
 
     private String movieName;

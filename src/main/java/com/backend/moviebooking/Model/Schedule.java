@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Schedule {
     @Id
-    @Field("scheduleId")
     private String id;
 
     private String startDate;

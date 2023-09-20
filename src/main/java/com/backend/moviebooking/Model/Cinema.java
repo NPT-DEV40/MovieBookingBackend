@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 public class Cinema {
     @Id
-    @Field("cinemaId")
     private String id;
 
     private String cinemaImage;

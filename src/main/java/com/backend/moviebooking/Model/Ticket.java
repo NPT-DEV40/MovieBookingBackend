@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 public class Ticket {
     @Id
-    @Field("ticketId")
     private String id;
 
     @DBRef

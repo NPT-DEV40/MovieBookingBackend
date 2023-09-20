@@ -134,7 +134,7 @@ public class AuthController {
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(@RequestBody TokenRefreshRequest request) {
         String refreshToken = request.getRefreshToken();
-
+        System.out.println(refreshToken);
         return refreshTokenService.findByToken(refreshToken)
                 .map(refreshTokenService::VerifyExpiration)
                 .map(RefreshToken::getUser)
@@ -214,7 +214,7 @@ public class AuthController {
 
     // Mod
     @GetMapping("/users")
-    @PreAuthorize("hasRole('MODERATOR')")
+//    @PreAuthorize("hasRole('MODERATOR')")
     public ResponseEntity<?> getAllUsers() {
         Query query = new Query();
         query.with(Sort.by(Sort.Direction.DESC, "roles"));
@@ -224,5 +224,11 @@ public class AuthController {
     @GetMapping("/emails")
     public ResponseEntity<?> getAllEmails() {
         return ResponseEntity.ok().body(userDetailsService.getUserByEmail("admin@gmail.com"));
+    }
+
+
+    @GetMapping("/roles")
+    public ResponseEntity<?> getAllRoles() {
+        return ResponseEntity.ok().body(roleRepository.findAll());
     }
 }

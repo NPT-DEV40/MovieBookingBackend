@@ -16,7 +16,6 @@ import java.time.Instant;
 @Document(collection = "refreshToken")
 public class RefreshToken {
     @Id
-    @Field("refreshTokenId")
     private String id;
 
     private String token;

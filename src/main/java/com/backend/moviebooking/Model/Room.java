@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 public class Room {
     @Id
-    @Field("roomId")
     private String id;
 
     private String roomName;

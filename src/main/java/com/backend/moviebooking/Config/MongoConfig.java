@@ -20,12 +20,12 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
 
     @Override
     protected String getDatabaseName() {
-        return "movie-booking";
+        return "movieBooking";
     }
 
     @Override
     public MongoClient mongoClient() {
-        final ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/movie-booking");
+        final ConnectionString connectionString = new ConnectionString("mongodb+srv://root:tan0399158711@movie-booking.jpmo0t4.mongodb.net/?retryWrites=true&w=majority");
         final MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)
                 .build();

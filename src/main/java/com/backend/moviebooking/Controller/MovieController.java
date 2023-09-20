@@ -98,6 +98,9 @@ public class MovieController {
         return movie;
     }
 
-
+    @GetMapping("/aws")
+    public String test() {
+        return "Hello";
+    }
 
 }
